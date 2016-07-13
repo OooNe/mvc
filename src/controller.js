@@ -12,7 +12,7 @@ export default class Controller {
 
         if (params.model) {
             this.model = params.model;
-            this.model.on('change', this.render.bind(this));
+            //this.model.on('change', this.render.bind(this));
         }
 
         this.initialize();
@@ -29,18 +29,18 @@ export default class Controller {
 
     assingEvent (eventSelector, eventName, event) {
         [].forEach.call(document.querySelectorAll(`${this.container} ${eventSelector}`), (el) => {
-            if (this.model) {
-                event.prototype.model = this.model;
-            }
+            const self = this;
 
-            el.addEventListener(eventName, event, true);
+            el.addEventListener(eventName, function (e) {
+                event(e, this, self)
+            }, true);
         });
     }
 
     render () {
         const container = document.querySelector(this.container);
         const template = Handlebars.compile(this.view);
-        const result = template({model: this.model.storage});
+        const result = template(this.model);
 
         if (container) {
             container.innerHTML = result;
