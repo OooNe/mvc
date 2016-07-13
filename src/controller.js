@@ -1,25 +1,27 @@
 import Handlebars from 'handlebars';
+import Model from './model';
 
 export default class Controller {
     constructor(params) {
         this.params = params;
         this.view = params.view;
         this.container = params.container;
-
-        if (params.events) {
-            this.events = params.events;
-        }
-
-        if (params.model) {
-            this.model = params.model;
-            //this.model.on('change', this.render.bind(this));
-        }
+        this.events = params.events;
+        this.models = params.model;
 
         this.initialize();
     }
 
+    bindModels() {
+        Object.keys(this.models || []).forEach((model) => {
+            if (this.models[model] instanceof Model) {
+                this.models[model].on('change', this.render.bind(this));
+            }
+        });
+    }
+
     bindEvents () {
-        Object.keys(this.events).forEach((event) => {
+        Object.keys(this.events || []).forEach((event) => {
             const eventName = event.split(' ')[0];
             const eventSelector = event.split(' ').slice(-1)[0];
 
@@ -40,7 +42,7 @@ export default class Controller {
     render () {
         const container = document.querySelector(this.container);
         const template = Handlebars.compile(this.view);
-        const result = template(this.model);
+        const result = template(this.models);
 
         if (container) {
             container.innerHTML = result;
@@ -53,5 +55,6 @@ export default class Controller {
 
     initialize () {
         this.render();
+        this.bindModels();
     }
 }
