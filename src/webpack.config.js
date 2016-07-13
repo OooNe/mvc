@@ -16,5 +16,8 @@ module.exports = {
             presets: ['es2015']
             }
         }
-    ]}
+    ]},
+    node: {
+        fs: "empty"
+    }
 };

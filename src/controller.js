@@ -1,3 +1,5 @@
+import Handlebars from 'handlebars';
+
 export default class Controller {
     constructor(params) {
         this.params = params;
@@ -10,15 +12,7 @@ export default class Controller {
 
         if (params.model) {
             this.model = params.model;
-            this.model.on('add', this.render.bind(this));
-        }
-
-        if (params.renderTarget) {
-            this.renderTarget = params.renderTarget;
-        }
-
-        if (params.renderElements) {
-            this.renderElements = params.renderElements;
+            this.model.on('change', this.render.bind(this));
         }
 
         this.initialize();
@@ -34,22 +28,22 @@ export default class Controller {
     }
 
     assingEvent (eventSelector, eventName, event) {
-        document
-            .querySelector(`${this.container} ${eventSelector}`)
-            .addEventListener(eventName, event.bind(this), false);
+        [].forEach.call(document.querySelectorAll(`${this.container} ${eventSelector}`), (el) => {
+            if (this.model) {
+                event.prototype.model = this.model;
+            }
+
+            el.addEventListener(eventName, event, true);
+        });
     }
 
     render () {
         const container = document.querySelector(this.container);
+        const template = Handlebars.compile(this.view);
+        const result = template({model: this.model.storage});
 
         if (container) {
-            container.innerHTML = this.view;
-        }
-
-        if (this.renderTarget && this.renderElements) {
-            container
-                .querySelector(this.renderTarget)
-                .appendChild(this.renderElements.call(this));
+            container.innerHTML = result;
         }
 
         if (this.events) {
