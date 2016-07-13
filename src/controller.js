@@ -1,6 +1,14 @@
 import Handlebars from 'handlebars';
 import Model from './model';
 
+Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+	if(v1 === v2) {
+        return options.fn(this);
+    }
+
+    return options.inverse(this);
+});
+
 export default class Controller {
     constructor(params) {
         this.params = params;
@@ -8,6 +16,7 @@ export default class Controller {
         this.container = params.container;
         this.events = params.events;
         this.models = params.model;
+        this.data = params.data;
 
         this.initialize();
     }
@@ -31,10 +40,10 @@ export default class Controller {
 
     assingEvent (eventSelector, eventName, event) {
         [].forEach.call(document.querySelectorAll(`${this.container} ${eventSelector}`), (el) => {
-            const self = this;
+            const controller = this;
 
             el.addEventListener(eventName, function (e) {
-                event(e, this, self)
+                event(e, this, controller)
             }, true);
         });
     }
@@ -42,7 +51,8 @@ export default class Controller {
     render () {
         const container = document.querySelector(this.container);
         const template = Handlebars.compile(this.view);
-        const result = template(this.models);
+        const result = template(this.data);
+
 
         if (container) {
             container.innerHTML = result;
