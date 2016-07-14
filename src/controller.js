@@ -48,19 +48,36 @@ export default class Controller {
         });
     }
 
+    getViewAjax() {
+        return new Promise((resolve, reject) => {
+            const xhttp = new XMLHttpRequest();
+            
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4 && xhttp.status === 200) {
+                    resolve(xhttp.responseText); 
+                }
+            };
+
+            xhttp.open('GET', this.view, true);
+            xhttp.send();
+        });
+    }
+
     render () {
-        const container = document.querySelector(this.container);
-        const template = Handlebars.compile(this.view);
-        const result = template(this.data);
+        this.getViewAjax()
+            .then((view) => {
+                const container = document.querySelector(this.container);
+                const template = Handlebars.compile(view);
+                const result = template(this.data);
 
+                if (container) {
+                    container.innerHTML = result;
+                }
 
-        if (container) {
-            container.innerHTML = result;
-        }
-
-        if (this.events) {
-            this.bindEvents();        
-        }
+                if (this.events) {
+                    this.bindEvents();
+                }
+            });
     }
 
     initialize () {
