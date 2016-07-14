@@ -1,4 +1,5 @@
 import events from 'events';
+import _ from 'underscore';
 
 export default class Model extends events.EventEmitter {
     constructor () {
@@ -8,11 +9,16 @@ export default class Model extends events.EventEmitter {
     }
 
     add (object) {
-        this.storage.push(object);
-        this.emit('add');
+        this.storage.push(_.extend(object, { _id : _.uniqueId() }));
+        this.emit('change');
     }
 
     getAll () {
         return this.storage;
+    }
+
+    remove (id) {
+        this.storage = _.reject(this.storage, (item) => item._id === id);
+        this.emit('change');
     }
 }
