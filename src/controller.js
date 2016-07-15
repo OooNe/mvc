@@ -10,13 +10,12 @@ Handlebars.registerHelper('ifCond', function(v1, v2, options) {
 });
 
 export default class Controller {
-    constructor(params) {
-        this.params = params;
-        this.view = params.view;
-        this.container = params.container;
-        this.events = params.events;
-        this.models = params.model;
-        this.data = params.data;
+    constructor(params = {}) {
+        this.view = params.view || '';
+        this.container = params.container || 'body';
+        this.events = params.events || {};
+        this.models = params.model || {};
+        this.data = params.data || {};
 
         this.initialize();
     }
@@ -44,7 +43,7 @@ export default class Controller {
     }
 
     bindModels() {
-        Object.keys(this.models || []).forEach((model) => {
+        Object.keys(this.models).forEach((model) => {
             if (this.models[model] instanceof Model) {
                 this.models[model].on('change', this.render.bind(this));
             }
@@ -52,7 +51,7 @@ export default class Controller {
     }
 
     bindEvents () {
-        Object.keys(this.events || []).forEach((event) => {
+        Object.keys(this.events).forEach((event) => {
             const eventName = event.split(' ')[0];
             const eventSelector = event.split(' ').slice(-1)[0];
 
