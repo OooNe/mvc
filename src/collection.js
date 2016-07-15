@@ -32,7 +32,6 @@ export default class Collection extends events.EventEmitter {
     bindEventsListener () {
         this.storage.forEach(item => {
             item.on('change', () => {
-                console.log('item changed')
                 this.emit('change');
             });
         });
