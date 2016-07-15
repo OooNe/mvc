@@ -1,20 +1,13 @@
 import Handlebars from 'handlebars';
 import Model from './model';
 
-Handlebars.registerHelper('ifCond', function(v1, v2, options) {
-	if(v1 === v2) {
-        return options.fn(this);
-    }
-
-    return options.inverse(this);
-});
-
 export default class Controller {
     constructor(params = {}) {
         this.view = params.view || '';
         this.container = params.container || 'body';
         this.events = params.events || {};
         this.models = params.model || {};
+        this.helpers = params.helpers || {};
         this.data = params.data || {};
 
         this.initialize();
@@ -23,6 +16,7 @@ export default class Controller {
     initialize () {
         this.render();
         this.bindModels();
+        this.bindHelpers();
     }
 
     render () {
@@ -56,6 +50,12 @@ export default class Controller {
             const eventSelector = event.split(' ').slice(-1)[0];
 
             this.assingEvent(eventSelector, eventName, this.events[event])
+        });
+    }
+
+    bindHelpers () {
+        Object.keys(this.helpers).forEach((helper) => {
+            Handlebars.registerHelper(helper, this.helpers[helper]);
         });
     }
 
