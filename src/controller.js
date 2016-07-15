@@ -21,6 +21,28 @@ export default class Controller {
         this.initialize();
     }
 
+    initialize () {
+        this.render();
+        this.bindModels();
+    }
+
+    render () {
+        this.getViewAjax()
+            .then((view) => {
+                const container = document.querySelector(this.container);
+                const template = Handlebars.compile(view);
+                const result = template(this.data);
+
+                if (container) {
+                    container.innerHTML = result;
+                }
+
+                if (this.events) {
+                    this.bindEvents();
+                }
+            });
+    }
+
     bindModels() {
         Object.keys(this.models || []).forEach((model) => {
             if (this.models[model] instanceof Model) {
@@ -61,27 +83,5 @@ export default class Controller {
             xhttp.open('GET', this.view, true);
             xhttp.send();
         });
-    }
-
-    render () {
-        this.getViewAjax()
-            .then((view) => {
-                const container = document.querySelector(this.container);
-                const template = Handlebars.compile(view);
-                const result = template(this.data);
-
-                if (container) {
-                    container.innerHTML = result;
-                }
-
-                if (this.events) {
-                    this.bindEvents();
-                }
-            });
-    }
-
-    initialize () {
-        this.render();
-        this.bindModels();
     }
 }
