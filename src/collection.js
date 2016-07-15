@@ -6,13 +6,17 @@ export default class Collection extends events.EventEmitter {
         super();
 
         this.storage = [];
-        this.type = params.type || ''
+        this.type = params.type || '';
+
+        this.bindEventsListener();
     }
 
     add (object) {
         if (this.isThisCollectionType(object)) {
             this.storage.push(_.extend(object, { _id : _.uniqueId() }));
             this.emit('change');
+
+            this.bindEventsListener();
         }
     }
 
@@ -23,6 +27,15 @@ export default class Collection extends events.EventEmitter {
     remove (id) {
         this.storage = _.reject(this.storage, (item) => item._id === id);
         this.emit('change');
+    }
+
+    bindEventsListener () {
+        this.storage.forEach(item => {
+            item.on('change', () => {
+                console.log('item changed')
+                this.emit('change');
+            });
+        });
     }
 
     isThisCollectionType(object) {
