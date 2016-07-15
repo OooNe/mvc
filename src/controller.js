@@ -20,20 +20,14 @@ export default class Controller {
     }
 
     render () {
-        this.getViewAjax()
-            .then((view) => {
-                const container = document.querySelector(this.container);
+        this.getViewAjax().then((view) => {
+            const container = document.querySelector(this.container);
+            const template = Handlebars.compile(view)(this.data);
 
-                if (container) {
-                    const template = Handlebars.compile(view)(this.data);
+            container.innerHTML = template;
 
-                    container.innerHTML = template;
-                }
-
-                if (this.events) {
-                    this.bindEvents();
-                }
-            });
+            this.bindEvents();
+        });
     }
 
     bindModels() {
@@ -71,16 +65,16 @@ export default class Controller {
 
     getViewAjax() {
         return new Promise((resolve, reject) => {
-            const xhttp = new XMLHttpRequest();
+            const request = new XMLHttpRequest();
             
-            xhttp.onreadystatechange = () => {
-                if (xhttp.readyState === 4 && xhttp.status === 200) {
-                    resolve(xhttp.responseText); 
+            request.onreadystatechange = () => {
+                if (request.readyState === 4 && request.status === 200) {
+                    resolve(request.responseText); 
                 }
             };
 
-            xhttp.open('GET', this.view, true);
-            xhttp.send();
+            request.open('GET', this.view, true);
+            request.send();
         });
     }
 }
