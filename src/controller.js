@@ -1,4 +1,5 @@
 import Handlebars from 'handlebars';
+import Collection from './collection';
 import Model from './model';
 
 export default class Controller {
@@ -6,7 +7,8 @@ export default class Controller {
         this.view = params.view || '';
         this.container = params.container || 'body';
         this.events = params.events || {};
-        this.models = params.model || {};
+        this.collections = params.collections || {};
+        this.models = params.models || {};
         this.helpers = params.helpers || {};
         this.data = params.data || {};
 
@@ -15,6 +17,7 @@ export default class Controller {
 
     initialize () {
         this.render();
+        this.bindCollections();
         this.bindModels();
         this.bindHelpers();
     }
@@ -34,6 +37,14 @@ export default class Controller {
         Object.keys(this.models).forEach((model) => {
             if (this.models[model] instanceof Model) {
                 this.models[model].on('change', this.render.bind(this));
+            }
+        });
+    }
+
+    bindCollections() {
+        Object.keys(this.collections).forEach((collection) => {
+            if (this.collections[collection] instanceof Collection) {
+                this.collections[collection].on('change', this.render.bind(this));
             }
         });
     }
