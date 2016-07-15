@@ -30,11 +30,11 @@ export default class Controller {
         this.getViewAjax()
             .then((view) => {
                 const container = document.querySelector(this.container);
-                const template = Handlebars.compile(view);
-                const result = template(this.data);
 
                 if (container) {
-                    container.innerHTML = result;
+                    const template = Handlebars.compile(view)(this.data);
+
+                    container.innerHTML = template;
                 }
 
                 if (this.events) {
